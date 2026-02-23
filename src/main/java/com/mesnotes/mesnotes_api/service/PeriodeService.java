@@ -1,6 +1,10 @@
 package com.mesnotes.mesnotes_api.service;
 
 import com.mesnotes.mesnotes_api.model.Sujet;
+import com.mesnotes.mesnotes_api.dto.CritereDTO;
+import com.mesnotes.mesnotes_api.dto.PeriodeDTO;
+import com.mesnotes.mesnotes_api.dto.SujetDTO;
+import com.mesnotes.mesnotes_api.model.Critere;
 import com.mesnotes.mesnotes_api.model.Periode;
 import com.mesnotes.mesnotes_api.repository.PeriodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PeriodeService {
@@ -82,4 +87,29 @@ public class PeriodeService {
         periode.setNote(objectif);
         pr.save(periode);
     }
+
+// Traitement DTO
+    @Autowired
+    private SujetService sujetService;
+
+    public PeriodeDTO obtenirPeriodeComplete(String id) {    
+        Periode periode = pr.findById(id)
+                .orElseThrow(() -> new RuntimeException("Période non trouvée"));
+        return entityToDto(periode);
+    }
+
+    public PeriodeDTO entityToDto(Periode periode) {
+        PeriodeDTO dto = new PeriodeDTO();
+        dto.setId(periode.getId());
+        dto.setNom(periode.getNom());
+        dto.setNote(periode.getNote());
+        dto.setPoids(periode.getPoids());
+        if (periode.getListeSujets() != null) {
+            List<SujetDTO> sujetDtos = periode.getListeSujets().stream()
+                .map(sujetService::entityToDto)
+                .collect(Collectors.toList());
+            dto.setListeSujets(sujetDtos);
+        }
+        return dto;
+    } 
 }

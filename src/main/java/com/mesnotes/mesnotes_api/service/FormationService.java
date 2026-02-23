@@ -1,6 +1,10 @@
 package com.mesnotes.mesnotes_api.service;
 
 import com.mesnotes.mesnotes_api.model.Periode;
+import com.mesnotes.mesnotes_api.model.Sujet;
+import com.mesnotes.mesnotes_api.dto.FormationDTO;
+import com.mesnotes.mesnotes_api.dto.PeriodeDTO;
+import com.mesnotes.mesnotes_api.dto.SujetDTO;
 import com.mesnotes.mesnotes_api.model.Formation;
 import com.mesnotes.mesnotes_api.repository.FormationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FormationService {
@@ -82,4 +87,28 @@ public class FormationService {
         formation.setNote(objectif);
         fr.save(formation);
     }
+
+// Traitement DTO
+    @Autowired
+    private PeriodeService periodeService;
+    
+    public FormationDTO obtenirFormationComplete(String id) {    
+        Formation formation = fr.findById(id)
+                .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
+        return entityToDto(formation);
+    }
+
+    public FormationDTO entityToDto(Formation formation) {
+        FormationDTO dto = new FormationDTO();
+        dto.setId(formation.getId());
+        dto.setNom(formation.getNom());
+        dto.setNote(formation.getNote());
+        if (formation.getListePeriodes() != null) {
+            List<PeriodeDTO> periodeDtos = formation.getListePeriodes().stream()
+                .map(periodeService::entityToDto)
+                .collect(Collectors.toList());
+            dto.setListePeriodes(periodeDtos);
+        }
+        return dto;
+    }       
 }
