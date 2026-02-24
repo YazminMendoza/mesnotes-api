@@ -18,6 +18,11 @@ public class SujetService {
     @Autowired
     private SujetRepository sr;
 
+    public SujetDTO save(Sujet sujet) {
+        Sujet sauve = sr.save(sujet);
+        return entityToDto(sauve);
+    }
+
 // Logique métier    
     @Transactional
     public Double calculerMoyenne(String sujetId) {

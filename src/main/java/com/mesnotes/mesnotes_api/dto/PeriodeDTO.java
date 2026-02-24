@@ -11,3 +11,4 @@ public class PeriodeDTO {
     private Double poids;
     private List<SujetDTO> listeSujets;
 }
+

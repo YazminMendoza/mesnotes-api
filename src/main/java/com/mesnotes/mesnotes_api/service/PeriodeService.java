@@ -14,11 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.text.html.parser.Entity;
+
 @Service
 public class PeriodeService {
 
     @Autowired
     private PeriodeRepository pr;
+
+    public PeriodeDTO save(Periode periode) {
+        Periode sauve = pr.save(periode);
+        return entityToDto(sauve);
+    }
 
     @Transactional
     public Double calculerMoyenne(String periodeId) {
