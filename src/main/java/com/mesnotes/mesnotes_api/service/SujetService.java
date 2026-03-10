@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,9 +24,13 @@ public class SujetService {
         return entityToDto(sauve);
     }
 
+    public void deleteById(UUID id) {
+        sr.deleteById(id);
+    }
+
 // Logique métier    
     @Transactional
-    public Double calculerMoyenne(String sujetId) {
+    public Double calculerMoyenne(UUID sujetId) {
         // Chercher le sujet et ses critères sur la base de données
         Sujet sujet = sr.findById(sujetId)
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé avec l'ID : " + sujetId));
@@ -59,7 +64,7 @@ public class SujetService {
     }
 
     @Transactional
-    public void atteindreNote(String sujetId, Double objectif) {
+    public void atteindreNote(UUID sujetId, Double objectif) {
         Sujet sujet = sr.findById(sujetId)
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé"));
 
@@ -103,7 +108,7 @@ public class SujetService {
     }
 
 // Traitement DTO
-    public SujetDTO obtenirSujetComplet(String id) {    
+    public SujetDTO obtenirSujetComplet(UUID id) {    
         Sujet sujet = sr.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé"));
         return entityToDto(sujet);

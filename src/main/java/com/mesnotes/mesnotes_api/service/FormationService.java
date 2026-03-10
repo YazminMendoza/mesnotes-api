@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,8 +21,17 @@ public class FormationService {
     @Autowired
     private FormationRepository fr;
 
+    public FormationDTO save(Formation formation) {
+        Formation sauve = fr.save(formation);
+        return entityToDto(sauve);
+    }
+
+    public void deleteById(UUID id) {
+        fr.deleteById(id);
+    }
+
     @Transactional
-    public Double calculerMoyenne(String formationId) {        
+    public Double calculerMoyenne(UUID formationId) {        
         Formation formation = fr.findById(formationId)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée avec l'ID : " + formationId));
 
@@ -50,7 +60,7 @@ public class FormationService {
     }
 
     @Transactional
-    public void atteindreNote(String formationId, Double objectif) {
+    public void atteindreNote(UUID formationId, Double objectif) {
         Formation formation = fr.findById(formationId)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
 
@@ -92,7 +102,7 @@ public class FormationService {
     @Autowired
     private PeriodeService periodeService;
     
-    public FormationDTO obtenirFormationComplete(String id) {    
+    public FormationDTO obtenirFormationComplete(UUID id) {    
         Formation formation = fr.findById(id)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
         return entityToDto(formation);

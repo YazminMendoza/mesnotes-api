@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController 
 @RequestMapping("/api/sujets")
@@ -18,7 +19,7 @@ public class SujetController {
 
 // (GET) Récupérer des informations sur un sujet précis
     @GetMapping("/{id}") 
-    public ResponseEntity<SujetDTO> getSujet(@PathVariable String id) {
+    public ResponseEntity<SujetDTO> getSujet(@PathVariable UUID id) {
         return ResponseEntity.ok(ss.obtenirSujetComplet(id));
     }    
 
@@ -30,14 +31,28 @@ public class SujetController {
 
 // (PUT) Calculer la moyenne pondérée en fonction des critères
     @PutMapping("/{id}/calculer")
-    public ResponseEntity<Double> calculer(@PathVariable String id) {
+    public ResponseEntity<Double> calculer(@PathVariable UUID id) {
         return ResponseEntity.ok(ss.calculerMoyenne(id));
     }
 
 // (POST) Calculer les notes minimales pour atteindre une note cible
     @PostMapping("/{id}/atteindre")
-    public ResponseEntity<Void> atteindre(@PathVariable String id, @RequestBody Map<String, Double> body) {
+    public ResponseEntity<Void> atteindre(@PathVariable UUID id, @RequestBody Map<String, Double> body) {
         ss.atteindreNote(id, body.get("objectif"));
         return ResponseEntity.ok().build();
+    }
+
+// (PUT) Modifier un sujet existant
+    @PutMapping("/{id}")
+    public ResponseEntity<SujetDTO> modifier(@PathVariable UUID id, @RequestBody Sujet sujet) {
+        sujet.setId(id);
+        return ResponseEntity.ok(ss.save(sujet));
+    }
+
+// (DELETE) Effacer un sujet
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> supprimer(@PathVariable UUID id) {
+        ss.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

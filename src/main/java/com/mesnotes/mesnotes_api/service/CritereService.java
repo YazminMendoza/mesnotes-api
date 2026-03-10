@@ -3,6 +3,9 @@ package com.mesnotes.mesnotes_api.service;
 import com.mesnotes.mesnotes_api.dto.CritereDTO;
 import com.mesnotes.mesnotes_api.model.Critere;
 import com.mesnotes.mesnotes_api.repository.CritereRepository;
+
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +23,12 @@ public class CritereService {
     }
 
     @Transactional
-    public void delete(String id) {
+    public void delete(UUID id) {
         cr.deleteById(id);
     }
 
     @Transactional
-    public Critere updateNote(String id, Double nouvelleNote) {
+    public Critere updateNote(UUID id, Double nouvelleNote) {
         Critere c = cr.findById(id)
             .orElseThrow(() -> new RuntimeException("Critère non trouvé"));
         c.setNote(nouvelleNote);

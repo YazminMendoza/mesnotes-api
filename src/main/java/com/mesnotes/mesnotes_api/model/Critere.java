@@ -14,5 +14,5 @@ public class Critere extends Module{
 
     @ManyToOne
     @JoinColumn(name = "sujet_id")
-    private Sujet sujet;
+    private Sujet sujet;    
 }

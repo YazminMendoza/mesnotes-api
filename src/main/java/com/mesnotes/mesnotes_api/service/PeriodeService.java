@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.swing.text.html.parser.Entity;
@@ -27,8 +28,12 @@ public class PeriodeService {
         return entityToDto(sauve);
     }
 
+    public void deleteById(UUID id) {
+        pr.deleteById(id);
+    }
+
     @Transactional
-    public Double calculerMoyenne(String periodeId) {
+    public Double calculerMoyenne(UUID periodeId) {
         Periode periode = pr.findById(periodeId)
                 .orElseThrow(() -> new RuntimeException("Période non trouvée avec l'ID : " + periodeId));
 
@@ -57,7 +62,7 @@ public class PeriodeService {
     }
 
     @Transactional
-    public void atteindreNote(String periodeId, Double objectif) {
+    public void atteindreNote(UUID periodeId, Double objectif) {
         Periode periode = pr.findById(periodeId)
                 .orElseThrow(() -> new RuntimeException("Période non trouvée"));
 
@@ -99,7 +104,7 @@ public class PeriodeService {
     @Autowired
     private SujetService sujetService;
 
-    public PeriodeDTO obtenirPeriodeComplete(String id) {    
+    public PeriodeDTO obtenirPeriodeComplete(UUID id) {    
         Periode periode = pr.findById(id)
                 .orElseThrow(() -> new RuntimeException("Période non trouvée"));
         return entityToDto(periode);
