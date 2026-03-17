@@ -32,6 +32,11 @@ public class PeriodeService {
         pr.deleteById(id);
     }
 
+    public List<PeriodeDTO> obtenirToutesLesPeriodes() {
+        List<Periode> periodes = pr.findAll();
+        return periodes.stream().map(this::entityToDto).collect(Collectors.toList());
+    }
+
     @Transactional
     public Double calculerMoyenne(UUID periodeId) {
         Periode periode = pr.findById(periodeId)

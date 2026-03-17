@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,9 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/formations")
+@CrossOrigin(origins = "http://localhost:5173")
 public class FormationController {
     @Autowired
     private FormationService fs;
+
+// (GET) Récuperer la liste de toutes les formations
+    @GetMapping
+    public List<FormationDTO> getAllFormations() {
+        return fs.obtenirToutesLesFormations();
+    }
 
 //(GET) Récupérer des informations sur une formation précise    
     @GetMapping("/{id}")

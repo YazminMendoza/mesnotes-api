@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +29,12 @@ public class SujetService {
         sr.deleteById(id);
     }
 
-// Logique métier    
+    public List<SujetDTO> obtenirTousLesSujets() {
+        List<Sujet> sujets = sr.findAll();
+        return sujets.stream().map(this::entityToDto).collect(Collectors.toList());
+    }
+
+    // Logique métier
     @Transactional
     public Double calculerMoyenne(UUID sujetId) {
         // Chercher le sujet et ses critères sur la base de données
@@ -69,7 +75,8 @@ public class SujetService {
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé"));
 
         List<Critere> criteres = sujet.getListeCriteres();
-        if (criteres.isEmpty()) return;
+        if (criteres.isEmpty())
+            return;
 
         double pointsActuels = 0.0;
         double poidsCriteresVides = 0.0;
@@ -88,7 +95,8 @@ public class SujetService {
         // Calculer les points manquants pour atteindre l'objectif
         double pointsNecessaires = (objectif * poidsTotal) - pointsActuels;
 
-        if (pointsNecessaires <= 0) return; // Si l'objectif est déjà atteint ou dépassé
+        if (pointsNecessaires <= 0)
+            return; // Si l'objectif est déjà atteint ou dépassé
 
         // Répartir les points nécessaires entre les critères vides
         if (poidsCriteresVides > 0) {
@@ -107,8 +115,8 @@ public class SujetService {
         sr.save(sujet);
     }
 
-// Traitement DTO
-    public SujetDTO obtenirSujetComplet(UUID id) {    
+    // Traitement DTO
+    public SujetDTO obtenirSujetComplet(UUID id) {
         Sujet sujet = sr.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé"));
         return entityToDto(sujet);

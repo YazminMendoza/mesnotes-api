@@ -30,6 +30,11 @@ public class FormationService {
         fr.deleteById(id);
     }
 
+    public List<FormationDTO> obtenirToutesLesFormations() {
+        List<Formation> formations = fr.findAll();
+        return formations.stream().map(this::entityToDto).collect(Collectors.toList());
+    }
+
     @Transactional
     public Double calculerMoyenne(UUID formationId) {        
         Formation formation = fr.findById(formationId)

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,11 +18,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/periodes")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PeriodeController {
     @Autowired
     private PeriodeService ps;
-    
+
+// (GET) Récuperer la liste de toutes les périodes
+    @GetMapping
+    public List<PeriodeDTO> getAllPeriodes() {
+        return ps.obtenirToutesLesPeriodes();
+    }
+
 //(GET) Récupérer des informations sur une période précise    
     @GetMapping("/{id}") 
     public ResponseEntity<PeriodeDTO> getPeriode(@PathVariable UUID id) {

@@ -7,15 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @RestController 
 @RequestMapping("/api/sujets")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class SujetController {
     @Autowired
     private SujetService ss;
+
+// (GET) Récuperer la liste de tous les sujets
+    @GetMapping
+    public List<SujetDTO> getAllSujets() {
+        return ss.obtenirTousLesSujets();
+    }    
 
 // (GET) Récupérer des informations sur un sujet précis
     @GetMapping("/{id}") 
