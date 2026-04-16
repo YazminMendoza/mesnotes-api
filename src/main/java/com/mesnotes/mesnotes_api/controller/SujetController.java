@@ -1,8 +1,11 @@
 package com.mesnotes.mesnotes_api.controller;
 
+import com.mesnotes.mesnotes_api.dto.CritereDTO;
 import com.mesnotes.mesnotes_api.dto.SujetDTO;
+import com.mesnotes.mesnotes_api.model.Critere;
 import com.mesnotes.mesnotes_api.model.Sujet;
 import com.mesnotes.mesnotes_api.service.SujetService;
+import com.mesnotes.mesnotes_api.service.CritereService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,12 +14,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+
 @RestController 
 @RequestMapping("/api/sujets")
 @CrossOrigin(origins = "http://localhost:5173")
 public class SujetController {
     @Autowired
     private SujetService ss;
+
+    @Autowired
+    private CritereService cs;
 
 // (GET) Récuperer la liste de tous les sujets
     @GetMapping
@@ -51,9 +58,15 @@ public class SujetController {
 
 // (PUT) Modifier un sujet existant
     @PutMapping("/{id}")
-    public ResponseEntity<SujetDTO> modifier(@PathVariable UUID id, @RequestBody Sujet sujet) {
+    public ResponseEntity<SujetDTO> modifierSujet(@PathVariable UUID id, @RequestBody Sujet sujet) {
         sujet.setId(id);
         return ResponseEntity.ok(ss.save(sujet));
+    }
+
+// (PATCH) Modifier partiellement un sujet existant
+    @PatchMapping("/{id}")
+    public ResponseEntity<SujetDTO> patch(@PathVariable UUID id, @RequestBody Map<String, Object> updates){
+        return ResponseEntity.ok(ss.patch(id, updates));
     }
 
 // (DELETE) Effacer un sujet
@@ -61,5 +74,11 @@ public class SujetController {
     public ResponseEntity<Void> supprimer(@PathVariable UUID id) {
         ss.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+// (POST) Ajouter un critère à un sujet spécifique
+    @PostMapping("/{id}/criteres")
+    public ResponseEntity<SujetDTO> ajouterCritere(@PathVariable UUID id, @RequestBody Critere critere) {
+        return ResponseEntity.ok(ss.ajouterCritereASujet(id, critere));
     }
 }

@@ -4,12 +4,14 @@ import com.mesnotes.mesnotes_api.dto.CritereDTO;
 import com.mesnotes.mesnotes_api.dto.SujetDTO;
 import com.mesnotes.mesnotes_api.model.Critere;
 import com.mesnotes.mesnotes_api.model.Sujet;
+import com.mesnotes.mesnotes_api.repository.CritereRepository;
 import com.mesnotes.mesnotes_api.repository.SujetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -19,6 +21,9 @@ public class SujetService {
 
     @Autowired
     private SujetRepository sr;
+
+    @Autowired
+    private CritereRepository cr;
 
     public SujetDTO save(Sujet sujet) {
         Sujet sauve = sr.save(sujet);
@@ -34,6 +39,42 @@ public class SujetService {
         return sujets.stream().map(this::entityToDto).collect(Collectors.toList());
     }
 
+    public SujetDTO ajouterCritereASujet(UUID sujetId, Critere nouveauCritere) {
+        Sujet sujet = sr.findById(sujetId)
+                .orElseThrow(() -> new RuntimeException("Sujet non trouvé"));
+        
+        nouveauCritere.setSujet(sujet);
+        sujet.getListeCriteres().add(nouveauCritere);
+
+        sr.save(sujet);
+
+        this.calculerMoyenne(sujetId);
+
+        return entityToDto(sujet);
+    }
+
+    @Transactional
+    public SujetDTO patch(UUID id, Map<String, Object> updates){
+        Sujet sujet = sr.findById(id)
+        .orElseThrow(() -> new RuntimeException("Sujet non trouvé"));
+        updates.forEach((key,value) -> {
+            switch (key) {
+                case "nom":
+                    sujet.setNom((String) value);
+                    break;
+                case "note":
+                    if (value instanceof Integer) {
+                        sujet.setNote(((Integer) value).doubleValue());
+                    } else {
+                        sujet.setNote((Double) value);
+                    }
+                    break;
+            }
+        });
+        Sujet sauve = sr.save(sujet);
+        return entityToDto(sauve);
+    }
+
     // Logique métier
     @Transactional
     public Double calculerMoyenne(UUID sujetId) {
@@ -41,7 +82,7 @@ public class SujetService {
         Sujet sujet = sr.findById(sujetId)
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé avec l'ID : " + sujetId));
 
-        List<Critere> criteres = sujet.getListeCriteres();
+        List<Critere> criteres = cr.findBySujetId(sujetId);
 
         // S'il n'y a pas des critères, on retourne la note
         if (criteres == null || criteres.isEmpty()) {
