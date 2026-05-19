@@ -45,15 +45,15 @@ public class SujetController {
 
 // (PUT) Calculer la moyenne pondérée en fonction des critères
     @PutMapping("/{id}/calculer")
-    public ResponseEntity<Double> calculer(@PathVariable UUID id) {
+    public ResponseEntity<SujetDTO> calculer(@PathVariable UUID id) {
         return ResponseEntity.ok(ss.calculerMoyenne(id));
     }
 
 // (POST) Calculer les notes minimales pour atteindre une note cible
-    @PostMapping("/{id}/atteindre")
-    public ResponseEntity<Void> atteindre(@PathVariable UUID id, @RequestBody Map<String, Double> body) {
-        ss.atteindreNote(id, body.get("objectif"));
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}/atteindre")
+    public ResponseEntity<SujetDTO> atteindre(@PathVariable UUID id, @RequestBody Map<String, Double> body) {
+        SujetDTO misAJour = ss.atteindreNote(id, body.get("objectif"));
+        return ResponseEntity.ok(misAJour);
     }
 
 // (PUT) Modifier un sujet existant

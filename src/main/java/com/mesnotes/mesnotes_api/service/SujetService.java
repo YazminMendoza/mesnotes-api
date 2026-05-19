@@ -77,7 +77,7 @@ public class SujetService {
 
     // Logique métier
     @Transactional
-    public Double calculerMoyenne(UUID sujetId) {
+    public SujetDTO calculerMoyenne(UUID sujetId) {
         // Chercher le sujet et ses critères sur la base de données
         Sujet sujet = sr.findById(sujetId)
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé avec l'ID : " + sujetId));
@@ -86,7 +86,7 @@ public class SujetService {
 
         // S'il n'y a pas des critères, on retourne la note
         if (criteres == null || criteres.isEmpty()) {
-            return sujet.getNote();
+            return entityToDto(sujet);
         }
 
         double sommeNotesPonderees = 0.0;
@@ -105,19 +105,19 @@ public class SujetService {
 
         // Mettre à jour l'objet Sujet et enregistrer dans la BD
         sujet.setNote(noteFinale);
-        sr.save(sujet);
+        Sujet sauve = sr.save(sujet);
 
-        return noteFinale;
+        return entityToDto(sauve);
     }
 
     @Transactional
-    public void atteindreNote(UUID sujetId, Double objectif) {
+    public SujetDTO atteindreNote(UUID sujetId, Double objectif) {
         Sujet sujet = sr.findById(sujetId)
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé"));
 
         List<Critere> criteres = sujet.getListeCriteres();
         if (criteres.isEmpty())
-            return;
+            return entityToDto(sujet);
 
         double pointsActuels = 0.0;
         double poidsCriteresVides = 0.0;
@@ -137,7 +137,7 @@ public class SujetService {
         double pointsNecessaires = (objectif * poidsTotal) - pointsActuels;
 
         if (pointsNecessaires <= 0)
-            return; // Si l'objectif est déjà atteint ou dépassé
+            return entityToDto(sujet); // Si l'objectif est déjà atteint ou dépassé
 
         // Répartir les points nécessaires entre les critères vides
         if (poidsCriteresVides > 0) {
@@ -153,7 +153,8 @@ public class SujetService {
 
         // Mettre à jour l'objet Sujet avec la note objectif et le sauvegarder
         sujet.setNote(objectif);
-        sr.save(sujet);
+        Sujet sauve = sr.save(sujet);
+        return entityToDto(sauve);
     }
 
     // Traitement DTO
